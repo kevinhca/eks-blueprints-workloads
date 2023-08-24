@@ -1,3 +1,4 @@
+cat << EOF > teams/team-riker/dev/templates/karpenter.yaml 
 {{ if .Values.spec.karpenterInstanceProfile }}
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
@@ -6,7 +7,7 @@ metadata:
   labels:
     {{- toYaml .Values.labels | nindent 4 }}  
 spec:
-  instanceProfile: {{ .Values.spec.clusterName }}-managed-ondemand
+  instanceProfile: '{{ .Values.spec.karpenterInstanceProfile }}'
   subnetSelector:
     kubernetes.io/cluster/{{ .Values.spec.clusterName }}: '*'
     kubernetes.io/role/internal-elb: '1' # to select only private subnets
@@ -49,8 +50,6 @@ spec:
       operator: In
       values:
         - linux
-  consolidation:
-    enabled: true
   providerRef:
     name: karpenter-default
 
@@ -84,3 +83,4 @@ spec:
       memory: 5Gi
       ephemeral-storage: 2Gi
 {{ end }}
+EOF
